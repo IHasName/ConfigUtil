@@ -1,2 +1,3 @@
 # ConfigUtil
-Small Config Util
+
+Small free to use Config Util
