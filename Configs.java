@@ -5,8 +5,6 @@ import org.bukkit.plugin.Plugin;
 import java.io.*;
 import java.util.logging.Level;
 
-import static de.mrstein.util.Utils.saveInternalFile;
-
 public class Configs {
 
     private FileConfiguration config = null;
