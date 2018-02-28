@@ -1,3 +1,3 @@
 # ConfigUtil
 
-Small free to use Config Util
+Small free to use Config Loader
