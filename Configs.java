@@ -1,19 +1,28 @@
+import com.google.common.io.Files;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
+import java.nio.channels.Channels;
 import java.util.logging.Level;
+
+/*
+ *  Project: Utils in Configs
+ *     by LikeWhat
+ */
 
 public class Configs {
 
     private FileConfiguration config = null;
+
     private File file = null;
 
-    private String filename = null;
-    private String subfolder = "";
-
     private boolean inPlugin;
+
+    private String subfolder;
+    private String filename;
 
     private Plugin plugin;
 
@@ -21,11 +30,22 @@ public class Configs {
         this.plugin = plugin;
         this.filename = filename;
         this.subfolder = subfolder.length > 0 ? "plugins/" + plugin.getName() + "/" + subfolder[0] : "plugins/" + plugin.getName();
-        inPlugin = internalFile;
-        get().options().copyDefaults(true);
-        if (internalFile) {
-            saveRes();
+        if (inPlugin = internalFile) {
+            try {
+                File outFile = new File(this.subfolder, filename);
+                Files.createParentDirs(outFile);
+                if (!outFile.exists()) {
+                    try (InputStream fileInputStream = LobbyJump.getInstance().getResource(filename); FileOutputStream fileOutputStream = new FileOutputStream(outFile)) {
+                        fileOutputStream.getChannel().transferFrom(Channels.newChannel(fileInputStream), 0, Integer.MAX_VALUE);
+                    } catch (FileNotFoundException e) {
+                        Bukkit.getLogger().log(Level.WARNING, "Failed to create File " + filename, e);
+                    }
+                }
+            } catch(Exception e) {
+                Bukkit.getLogger().log(Level.WARNING, "Failed to create File " + filename, e);
+            }
         }
+        get().options().copyDefaults(true);
     }
 
     public FileConfiguration get() {
@@ -38,7 +58,7 @@ public class Configs {
     public void save() {
         try {
             config.save(file);
-        } catch (IOException e) {
+        } catch (Exception e) {
             plugin.getLogger().log(Level.WARNING, "Failed to save File " + file.getName(), e);
         }
     }
@@ -61,26 +81,4 @@ public class Configs {
         return file;
     }
 
-    private void saveRes() {
-        InputStream in = plugin.getResource(filename);
-        File outFile = new File(subfolder, filename);
-        File outDir = new File(subfolder);
-        if (!outDir.exists()) {
-            outDir.mkdirs();
-        }
-        try {
-            if (!outFile.exists()) {
-                OutputStream out = new FileOutputStream(outFile);
-                byte[] b = new byte[1024];
-                int read;
-                while ((read = in.read(b)) > 0) {
-                    out.write(b, 0, read);
-                }
-                out.close();
-                in.close();
-            }
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Failed to create File " + file.getName(), e);
-        }
-    }
 }
