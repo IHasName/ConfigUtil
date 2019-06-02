@@ -35,7 +35,7 @@ public class Configs {
                 File outFile = new File(this.subfolder, filename);
                 Files.createParentDirs(outFile);
                 if (!outFile.exists()) {
-                    try (InputStream fileInputStream = LobbyJump.getInstance().getResource(filename); FileOutputStream fileOutputStream = new FileOutputStream(outFile)) {
+                    try (InputStream fileInputStream = plugin.getResource(filename); FileOutputStream fileOutputStream = new FileOutputStream(outFile)) {
                         fileOutputStream.getChannel().transferFrom(Channels.newChannel(fileInputStream), 0, Integer.MAX_VALUE);
                     } catch (FileNotFoundException e) {
                         Bukkit.getLogger().log(Level.WARNING, "Failed to create File " + filename, e);
